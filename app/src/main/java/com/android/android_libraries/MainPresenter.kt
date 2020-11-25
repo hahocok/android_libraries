@@ -13,6 +13,18 @@ class MainPresenter: MvpPresenter<MainView>() {
 
     private val model: Model = Model(ButtonIndex.values().size)
 
+    init {
+        model.observable.subscribe {
+            it.forEachIndexed { index, value ->
+                when(index) {
+                    ButtonIndex.FIRST.pos -> viewState.setTextFirstBtn(value)
+                    ButtonIndex.SECOND.pos -> viewState.setTextSecondBtn(value)
+                    ButtonIndex.THIRD.pos -> viewState.setTextThirdBtn(value)
+                }
+            }
+        }
+    }
+
     private fun calcValue(btn: ButtonIndex) {
         model.setAt(btn.pos, model.getAt(btn.pos) + 1)
     }

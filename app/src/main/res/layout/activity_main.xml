@@ -40,4 +40,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Количество = 0"/>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        />
+
+    <EditText
+        android:id="@+id/editTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        />
 </LinearLayout>
