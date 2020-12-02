@@ -1,65 +1,35 @@
 package com.android.android_libraries
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import com.android.android_libraries.databinding.ActivityMainBinding
 import com.arellomobile.mvp.MvpAppCompatActivity
 import com.arellomobile.mvp.presenter.InjectPresenter
-import io.reactivex.Emitter
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
-import java.io.File
-import java.io.FileOutputStream
-import java.util.concurrent.TimeUnit
 
+const val INTERNAL_PATH_TO_MEDIA = "media"
+const val FILE_NAME = "image_file.jpg"
+const val FILE_NEW_NAME = "new_image_file.png"
 
 class MainActivity : MvpAppCompatActivity(), MainView {
-    companion object {
-        private const val INTERNAL_PATH_TO_MEDIA = "media"
-        private const val FILE_NAME = "image_file.jpg"
-        private const val FILE_NEW_NAME = "new_image_file.png"
-    }
 
     @InjectPresenter
     lateinit var presenter: MainPresenter
 
-    private var disposableConverter: Disposable? = null
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        initView()
-    }
-
-    private fun initView() {
-        btnStart.setOnClickListener {
-            presenter.clickStartConverter()
-        }
-
-        btnCancel.setOnClickListener {
-            presenter.clickStopConverter()
-        }
+        presenter.initView(this, binding)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-
-        cancelConverted()
-    }
-
-    override fun cancelConverted() {
-        disposableConverter?.let {
-            if (!it.isDisposed) {
-                it.dispose()
-            }
-        }
+        presenter.cancelConverted()
     }
 
     override fun showProgress() {
@@ -104,31 +74,5 @@ class MainActivity : MvpAppCompatActivity(), MainView {
 
     override fun showError(e: Throwable) {
         Toast.makeText(this, R.string.convert_error, Toast.LENGTH_SHORT).show()
-    }
-
-    override fun startConverted(emitter: Emitter<Boolean>) {
-        disposableConverter = Observable
-            .fromCallable { assets.open(FILE_NAME) }
-            .subscribeOn(Schedulers.io())
-            .map { BitmapFactory.decodeStream(it) }
-            .map {
-                val folder = File(this.filesDir, INTERNAL_PATH_TO_MEDIA)
-                if (!folder.exists()) {
-                    folder.mkdir()
-                }
-
-                val newFile = File(folder, FILE_NEW_NAME)
-                val out = FileOutputStream(newFile)
-                val result = it.compress(Bitmap.CompressFormat.PNG, 100, out)
-                out.close()
-                result
-            }
-            .delay(5 * 1000L, TimeUnit.MILLISECONDS)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { emitter.onNext(it) },
-                { emitter.onError(it) },
-                { emitter.onComplete() }
-            )
     }
 }

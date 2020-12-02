@@ -5,7 +5,6 @@ import com.arellomobile.mvp.viewstate.strategy.OneExecutionStateStrategy
 import com.arellomobile.mvp.viewstate.strategy.SingleStateStrategy
 import com.arellomobile.mvp.viewstate.strategy.SkipStrategy
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType
-import io.reactivex.Emitter
 
 @StateStrategyType(value = SingleStateStrategy::class)
 interface MainView: MvpView {
@@ -31,8 +30,4 @@ interface MainView: MvpView {
     fun showCancelMsg()
     @StateStrategyType(value = SkipStrategy::class)
     fun showError(e: Throwable)
-    @StateStrategyType(value = SkipStrategy::class)
-    fun startConverted(emitter: Emitter<Boolean>)
-    @StateStrategyType(value = SkipStrategy::class)
-    fun cancelConverted()
 }

@@ -1,5 +1,7 @@
 package com.android.android_libraries
 
+import android.content.Context
+import com.android.android_libraries.databinding.ActivityMainBinding
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import io.reactivex.Emitter
@@ -7,19 +9,21 @@ import io.reactivex.Emitter
 @InjectViewState
 class MainPresenter: MvpPresenter<MainView>() {
 
+    private lateinit var converter: IConverter
+
     override fun attachView(view: MainView?) {
         super.attachView(view)
 
         resetView()
     }
 
-    fun clickStartConverter() {
+    private fun clickStartConverter(mainContext: Context) {
         viewState.showProgress()
         viewState.hideStartBtn()
         viewState.showCancelBtn()
         viewState.setTextProgress()
 
-        viewState.startConverted(object : Emitter<Boolean> {
+        converter = ConverterImpl(mainContext, object : Emitter<Boolean> {
             override fun onComplete() {
             }
 
@@ -35,8 +39,8 @@ class MainPresenter: MvpPresenter<MainView>() {
         })
     }
 
-    fun clickStopConverter() {
-        viewState.cancelConverted()
+    private fun clickStopConverter() {
+        converter.cancelConverted()
         viewState.showCancelMsg()
         resetView()
     }
@@ -46,5 +50,19 @@ class MainPresenter: MvpPresenter<MainView>() {
         viewState.hideProgress()
         viewState.showStartBtn()
         viewState.hideCancelBtn()
+    }
+
+    fun initView(mainContext: Context, binding: ActivityMainBinding) {
+        binding.btnStart.setOnClickListener {
+            clickStartConverter(mainContext)
+        }
+
+        binding.btnCancel.setOnClickListener {
+            clickStopConverter()
+        }
+    }
+
+    fun cancelConverted() {
+        converter.cancelConverted()
     }
 }
