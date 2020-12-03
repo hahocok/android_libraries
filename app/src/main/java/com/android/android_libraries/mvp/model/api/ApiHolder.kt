@@ -10,8 +10,8 @@ object ApiHolder {
 
     const val BASE_URL = "https://api.github.com"
 
-    private var instance: ApiHolder? = ApiHolder
-    private var api: IDataSource? = null
+    private var instance: ApiHolder = ApiHolder
+    private var api: IDataSource
 
     init {
         val gson = GsonBuilder()
@@ -26,7 +26,7 @@ object ApiHolder {
                 .create(IDataSource::class.java)
     }
 
-    fun getApi(): IDataSource? {
-        return instance!!.api
+    fun getApi(): IDataSource {
+        return instance.api
     }
 }

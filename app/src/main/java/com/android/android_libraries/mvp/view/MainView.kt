@@ -11,11 +11,11 @@ interface MainView : MvpView {
     fun updateList()
 
     @StateStrategyType(OneExecutionStateStrategy::class)
-    fun showMessage(text: String?)
+    fun showMessage(text: String)
 
     fun showLoading()
     fun hideLoading()
 
-    fun setUsername(username: String?)
-    fun loadImage(url: String?)
+    fun setUsername(username: String)
+    fun loadImage(url: String)
 }

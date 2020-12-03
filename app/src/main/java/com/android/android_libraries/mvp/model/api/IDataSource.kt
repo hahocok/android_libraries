@@ -10,8 +10,8 @@ import retrofit2.http.Url
 
 interface IDataSource {
     @GET("/users/{user}")
-    fun getUser(@Path("user") username: String?): Single<User?>?
+    fun getUser(@Path("user") username: String): Single<User>
 
     @GET
-    fun getRepositories(@Url url: String?): Single<List<Repository?>?>?
+    fun getRepositories(@Url url: String): Single<List<Repository>>
 }

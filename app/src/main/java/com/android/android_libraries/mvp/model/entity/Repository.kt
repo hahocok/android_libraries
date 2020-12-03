@@ -1,3 +1,5 @@
 package com.android.android_libraries.mvp.model.entity
 
-data class Repository(val name: String)
+import com.google.gson.annotations.Expose
+
+data class Repository(@Expose val name: String)

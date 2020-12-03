@@ -6,7 +6,7 @@ import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
 class UsersRepo {
-    fun getUser(username: String?): Single<User?> {
-        return ApiHolder.getApi()!!.getUser(username)!!.subscribeOn(Schedulers.io())
+    fun getUser(username: String): Single<User> {
+        return ApiHolder.getApi().getUser(username).subscribeOn(Schedulers.io())
     }
 }

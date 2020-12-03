@@ -3,7 +3,6 @@ package com.android.android_libraries.mvp.presenter
 import android.annotation.SuppressLint
 import com.android.android_libraries.mvp.model.entity.Repository
 import com.android.android_libraries.mvp.model.entity.User
-import com.android.android_libraries.mvp.model.repo.Common
 import com.android.android_libraries.mvp.model.repo.RepositoriesRepo
 import com.android.android_libraries.mvp.model.repo.UsersRepo
 import com.android.android_libraries.mvp.presenter.list.IRepositoriesListPresenter
@@ -13,11 +12,9 @@ import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import io.reactivex.Scheduler
 import io.reactivex.Single
+import io.reactivex.functions.Predicate
 import io.reactivex.schedulers.Schedulers
-import retrofit2.Call
 import java.util.*
-import retrofit2.Callback
-import retrofit2.Response
 
 @InjectViewState
 class MainPresenter(var mainThread: Scheduler) : MvpPresenter<MainView>() {
@@ -37,16 +34,14 @@ class MainPresenter(var mainThread: Scheduler) : MvpPresenter<MainView>() {
 
     private val USERNAME = "googlesamples"
 
-    private var usersRepo: UsersRepo? = null
-    private var common: Common? = null
-    var repositoriesListPresenter: RepositoriesListPresenter? = null
+    private var usersRepo: UsersRepo
+    private var repositoriesRepo: RepositoriesRepo
 
-    private var repositoriesRepo: RepositoriesRepo? = null
+    var repositoriesListPresenter: RepositoriesListPresenter
+
 
     init {
-        repositoriesRepo = RepositoriesRepo()
         usersRepo = UsersRepo()
-        common = Common
         repositoriesRepo = RepositoriesRepo()
         repositoriesListPresenter = RepositoriesListPresenter()
     }
@@ -60,37 +55,37 @@ class MainPresenter(var mainThread: Scheduler) : MvpPresenter<MainView>() {
     @SuppressLint("CheckResult")
     private fun loadUser() {
         viewState.showLoading()
-        usersRepo!!.getUser(USERNAME)
+        usersRepo.getUser(USERNAME)
             .observeOn(mainThread)
             .doOnEvent { user, throwable ->
                 setUser(user)
-                setErrorMsg(throwable)
+                throwable?.let { setErrorMsg(it) }
             }
             .observeOn(Schedulers.io())
             .flatMap { user -> getRepositoriesByUrl(user.repos_url) }
             .observeOn(mainThread)
-            .subscribe({ repositories: List<Repository?>? -> setUserRepositories(repositories) }) { throwable: Throwable ->
+            .subscribe({ repositories: List<Repository> -> setUserRepositories(repositories) }) { throwable: Throwable ->
                 setErrorMsg(throwable)
             }
     }
 
     private fun setErrorMsg(throwable: Throwable) {
         viewState.hideLoading()
-        viewState.showMessage(throwable.message)
+        throwable.message?.let { viewState.showMessage(it) }
     }
 
-    private fun setUser(user: User?) {
-        viewState.setUsername(user!!.login)
-        viewState.loadImage(user.avatar)
+    private fun setUser(user: User) {
+        viewState.setUsername(user.login)
+        viewState.loadImage(user.avatar_url)
     }
 
-    private fun getRepositoriesByUrl(url: String): Single<List<Repository?>?>? {
-        return repositoriesRepo!!.getRepositories(url)
+    private fun getRepositoriesByUrl(url: String): Single<List<Repository>> {
+        return repositoriesRepo.getRepositories(url)
     }
 
-    private fun setUserRepositories(repositories: List<Repository?>?) {
-        repositoriesListPresenter!!.repositories.clear()
-        repositoriesListPresenter!!.repositories = repositories as MutableList<Repository>
+    private fun setUserRepositories(repositories: List<Repository>) {
+        repositoriesListPresenter.repositories.clear()
+        repositoriesListPresenter.repositories = repositories.toMutableList()
         viewState.updateList()
         viewState.hideLoading()
     }
