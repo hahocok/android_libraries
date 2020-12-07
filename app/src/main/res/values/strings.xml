@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">android_libraries</string>
+    <string name="start">Start</string>
+    <string name="cancel">Cancel</string>
+    <string name="converter_jpg_to_png">Converter jpg to png</string>
+    <string name="converter_progress">Converted is process&#8230;</string>
+    <string name="convert_success">Converted success</string>
+    <string name="convert_error">Converted error</string>
+    <string name="convert_was_canceled">Converted was canceled</string>
 </resources>
