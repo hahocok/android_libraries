@@ -11,7 +11,7 @@ import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
 
-class UsersRepo : IUsersRepo {
+class RealmUsersRepositoriesImpl : IUsersRepo {
 
     private val networkStatus: INetworkStatus = NetworkStatus()
     private val cache: ICache = PaperCacheImpl()
@@ -22,12 +22,12 @@ class UsersRepo : IUsersRepo {
                 .getUser(username)
                 .subscribeOn(Schedulers.io())
                 .map { user ->
-                cache.saveUser(
-                    username,
+                    cache.saveUser(
+                        username,
+                        user
+                    )
                     user
-                )
-                user
-            }
+                }
         } else {
             cache.getUser(username)
         }
@@ -36,7 +36,8 @@ class UsersRepo : IUsersRepo {
 
     override fun getRepositories(user: User): Single<List<Repository>> {
         return if (networkStatus.isOnline()) {
-            getApi().getUserRepositories(user.repos_url)
+            getApi()
+                .getUserRepositories(user.repos_url)
                 .map { repos ->
                     cache.saveUserRepository(user, repos.toMutableList())
                     repos
@@ -45,6 +46,6 @@ class UsersRepo : IUsersRepo {
         } else {
             cache.getUserRepositories(user.login)
         }
-    }
 
+    }
 }

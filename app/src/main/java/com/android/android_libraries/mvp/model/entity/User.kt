@@ -8,5 +8,7 @@ data class User(
     @Expose
     val avatar_url: String,
     @Expose
-    val repos_url: String
+    val repos_url: String,
+    @Expose
+    val name: String
     )

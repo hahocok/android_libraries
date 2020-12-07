@@ -3,7 +3,8 @@ package com.android.android_libraries.mvp.presenter
 import android.annotation.SuppressLint
 import com.android.android_libraries.mvp.model.entity.Repository
 import com.android.android_libraries.mvp.model.entity.User
-import com.android.android_libraries.mvp.model.repo.RepositoriesRepo
+import com.android.android_libraries.mvp.model.repo.IUsersRepo
+import com.android.android_libraries.mvp.model.repo.RealmUsersRepositoriesImpl
 import com.android.android_libraries.mvp.model.repo.UsersRepo
 import com.android.android_libraries.mvp.presenter.list.IRepositoriesListPresenter
 import com.android.android_libraries.mvp.view.MainView
@@ -12,7 +13,6 @@ import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import io.reactivex.Scheduler
 import io.reactivex.Single
-import io.reactivex.functions.Predicate
 import io.reactivex.schedulers.Schedulers
 import java.util.*
 
@@ -34,15 +34,13 @@ class MainPresenter(var mainThread: Scheduler) : MvpPresenter<MainView>() {
 
     private val USERNAME = "googlesamples"
 
-    private var usersRepo: UsersRepo
-    private var repositoriesRepo: RepositoriesRepo
+    private var usersRepo: IUsersRepo
 
     var repositoriesListPresenter: RepositoriesListPresenter
 
 
     init {
-        usersRepo = UsersRepo()
-        repositoriesRepo = RepositoriesRepo()
+        usersRepo = RealmUsersRepositoriesImpl()
         repositoriesListPresenter = RepositoriesListPresenter()
     }
 
@@ -62,7 +60,7 @@ class MainPresenter(var mainThread: Scheduler) : MvpPresenter<MainView>() {
                 throwable?.let { setErrorMsg(it) }
             }
             .observeOn(Schedulers.io())
-            .flatMap { user -> getRepositoriesByUrl(user.repos_url) }
+            .flatMap { user -> getRepositoriesByUrl(user) }
             .observeOn(mainThread)
             .subscribe({ repositories: List<Repository> -> setUserRepositories(repositories) }) { throwable: Throwable ->
                 setErrorMsg(throwable)
@@ -79,8 +77,8 @@ class MainPresenter(var mainThread: Scheduler) : MvpPresenter<MainView>() {
         viewState.loadImage(user.avatar_url)
     }
 
-    private fun getRepositoriesByUrl(url: String): Single<List<Repository>> {
-        return repositoriesRepo.getRepositories(url)
+    private fun getRepositoriesByUrl(user: User): Single<List<Repository>> {
+        return usersRepo.getRepositories(user)
     }
 
     private fun setUserRepositories(repositories: List<Repository>) {
