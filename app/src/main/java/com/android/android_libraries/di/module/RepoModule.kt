@@ -18,7 +18,7 @@ class RepoModule {
     fun usersRepo(
         networkStatus: INetworkStatus,
         api: IDataSource,
-        @Named("room") cache: ICache
+        @Named("realm") cache: ICache
     ): UsersRepo =
         UsersRepo(networkStatus, api, cache)
 

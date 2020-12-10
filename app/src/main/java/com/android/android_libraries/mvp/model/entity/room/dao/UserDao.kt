@@ -4,7 +4,7 @@ import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
 import com.android.android_libraries.mvp.model.entity.room.RoomUser
 
-//@Dao
+@Dao
 interface UserDao {
     @Insert(onConflict = REPLACE)
     fun insert(user: RoomUser)
@@ -39,4 +39,6 @@ interface UserDao {
     @Query("SELECT * FROM roomuser WHERE login = :login LIMIT 1")
     fun findByLogin(login: String?): RoomUser?
 
+    @Query("SELECT * FROM roomuser WHERE avatarUrl = :url LIMIT 1")
+    fun findByUrl(url: String?): RoomUser
 }

@@ -1,11 +1,11 @@
 package com.android.android_libraries
 
 import android.app.Application
-import android.content.Context
 import androidx.multidex.MultiDex
 import com.android.android_libraries.di.AppComponent
 import com.android.android_libraries.di.DaggerAppComponent
 import com.android.android_libraries.di.module.AppModule
+import com.android.android_libraries.mvp.model.entity.room.db.Database
 import io.paperdb.Paper
 import io.realm.Realm
 import io.realm.RealmConfiguration
@@ -23,7 +23,7 @@ class App : Application() {
         MultiDex.install(this)
         Paper.init(this)
 
-//        Database.create(this)
+        Database.create(this)
 
         Realm.init(this)
         val config: RealmConfiguration = RealmConfiguration.Builder()

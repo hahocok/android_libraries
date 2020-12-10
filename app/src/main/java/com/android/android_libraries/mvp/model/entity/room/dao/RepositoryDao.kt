@@ -4,7 +4,7 @@ import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
 import com.android.android_libraries.mvp.model.entity.room.RoomRepository
 
-//@Dao
+@Dao
 interface RepositoryDao {
 
     @Insert(onConflict = REPLACE)
