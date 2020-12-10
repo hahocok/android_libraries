@@ -55,7 +55,7 @@ class GlideImageLoader(private var networkStatus: INetworkStatus, private val im
                                 isFirstResource: Boolean
                         ): Boolean {
                             resource?.let { imageCache.saveImage(url, resource) }
-                            return true
+                            return false
                         }
                     }).into(container)
         } else {
