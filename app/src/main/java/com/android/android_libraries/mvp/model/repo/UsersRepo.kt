@@ -1,24 +1,22 @@
 package com.android.android_libraries.mvp.model.repo
 
-import com.android.android_libraries.mvp.model.api.ApiHolder.getApi
+import com.android.android_libraries.mvp.model.api.IDataSource
 import com.android.android_libraries.mvp.model.api.INetworkStatus
 import com.android.android_libraries.mvp.model.cache.ICache
-import com.android.android_libraries.mvp.model.cache.PaperCacheImpl
 import com.android.android_libraries.mvp.model.entity.Repository
 import com.android.android_libraries.mvp.model.entity.User
-import com.android.android_libraries.ui.NetworkStatus
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
+class UsersRepo(
+    private val networkStatus: INetworkStatus,
+    private val api: IDataSource,
+    private val cache: ICache
+) {
 
-class UsersRepo : IUsersRepo {
-
-    private val networkStatus: INetworkStatus = NetworkStatus()
-    private val cache: ICache = PaperCacheImpl()
-
-    override fun getUser(username: String): Single<User> {
+    fun getUser(username: String): Single<User> {
         return if (networkStatus.isOnline()) {
-            getApi()
+            api
                 .getUser(username)
                 .subscribeOn(Schedulers.io())
                 .map { user ->
@@ -34,9 +32,9 @@ class UsersRepo : IUsersRepo {
 
     }
 
-    override fun getRepositories(user: User): Single<List<Repository>> {
+    fun getRepositories(user: User): Single<List<Repository>> {
         return if (networkStatus.isOnline()) {
-            getApi().getUserRepositories(user.repos_url)
+            api.getUserRepositories(user.repos_url)
                 .map { repos ->
                     cache.saveUserRepository(user, repos.toMutableList())
                     repos

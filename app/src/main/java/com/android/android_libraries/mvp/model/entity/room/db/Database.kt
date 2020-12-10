@@ -10,29 +10,29 @@ import com.android.android_libraries.mvp.model.entity.room.dao.RepositoryDao
 import com.android.android_libraries.mvp.model.entity.room.dao.UserDao
 
 
-@Database(entities = [RoomUser::class, RoomRepository::class], version = 1)
-abstract class Database : RoomDatabase() {
-    companion object{
-
-        private val DB_NAME = "userDatabase.db"
-
-        @Volatile
-        private lateinit var instance: com.android.android_libraries.mvp.model.entity.room.db.Database
-
-        @Synchronized
-        fun getInstance(): com.android.android_libraries.mvp.model.entity.room.db.Database {
-            return instance
-        }
-
-        fun create(context: Context) {
-            instance = Room.databaseBuilder(
-                context,
-                com.android.android_libraries.mvp.model.entity.room.db.Database::class.java, DB_NAME
-            ).build()
-        }
-    }
-
-    abstract fun getUserDao(): UserDao
-    abstract fun getRepositoryDao(): RepositoryDao
-
-}
+//@Database(entities = [RoomUser::class, RoomRepository::class], version = 1, exportSchema = false)
+//abstract class Database : RoomDatabase() {
+//    companion object{
+//
+//        private val DB_NAME = "userDatabase.db"
+//
+//        @Volatile
+//        private lateinit var instance: com.android.android_libraries.mvp.model.entity.room.db.Database
+//
+//        @Synchronized
+//        fun getInstance(): com.android.android_libraries.mvp.model.entity.room.db.Database {
+//            return instance
+//        }
+//
+//        fun create(context: Context) {
+//            instance = Room.databaseBuilder(
+//                context,
+//                com.android.android_libraries.mvp.model.entity.room.db.Database::class.java, DB_NAME
+//            ).build()
+//        }
+//    }
+//
+//    abstract fun getUserDao(): UserDao
+//    abstract fun getRepositoryDao(): RepositoryDao
+//
+//}

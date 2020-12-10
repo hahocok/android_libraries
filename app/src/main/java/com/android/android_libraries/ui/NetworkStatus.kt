@@ -6,10 +6,11 @@ import android.net.NetworkInfo
 import com.android.android_libraries.App
 import com.android.android_libraries.mvp.model.api.INetworkStatus
 import com.android.android_libraries.mvp.model.api.INetworkStatus.Status
+import com.android.android_libraries.ui.activity.MainActivity
 
-class NetworkStatus : INetworkStatus {
+class NetworkStatus(private val context: Context) : INetworkStatus {
     override fun getStatus(): Status {
-        val cm: ConnectivityManager = App.instance.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val cm: ConnectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetwork: NetworkInfo = cm.activeNetworkInfo ?: return Status.OFFLINE
         when (activeNetwork.type) {
             ConnectivityManager.TYPE_WIFI -> return Status.WIFI

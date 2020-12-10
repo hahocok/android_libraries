@@ -85,7 +85,7 @@ class RealmCacheImpl : ICache {
         if (realmUser == null) {
             return Single.error<Any>(java.lang.RuntimeException("no repos for such user in cache")) as Single<List<Repository>>
         } else {
-            for ((id, name) in realmUser.repos) {
+            realmUser.repos.forEach { (id, name) ->
                 repos.add(Repository(id, name))
             }
         }

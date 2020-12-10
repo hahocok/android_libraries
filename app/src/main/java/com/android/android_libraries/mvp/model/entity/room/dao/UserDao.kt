@@ -4,7 +4,7 @@ import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
 import com.android.android_libraries.mvp.model.entity.room.RoomUser
 
-@Dao
+//@Dao
 interface UserDao {
     @Insert(onConflict = REPLACE)
     fun insert(user: RoomUser)

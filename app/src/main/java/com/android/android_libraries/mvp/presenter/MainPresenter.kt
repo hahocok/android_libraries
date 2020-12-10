@@ -3,8 +3,6 @@ package com.android.android_libraries.mvp.presenter
 import android.annotation.SuppressLint
 import com.android.android_libraries.mvp.model.entity.Repository
 import com.android.android_libraries.mvp.model.entity.User
-import com.android.android_libraries.mvp.model.repo.IUsersRepo
-import com.android.android_libraries.mvp.model.repo.RealmUsersRepositoriesImpl
 import com.android.android_libraries.mvp.model.repo.UsersRepo
 import com.android.android_libraries.mvp.presenter.list.IRepositoriesListPresenter
 import com.android.android_libraries.mvp.view.MainView
@@ -15,6 +13,7 @@ import io.reactivex.Scheduler
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import java.util.*
+import javax.inject.Inject
 
 @InjectViewState
 class MainPresenter(var mainThread: Scheduler) : MvpPresenter<MainView>() {
@@ -34,15 +33,10 @@ class MainPresenter(var mainThread: Scheduler) : MvpPresenter<MainView>() {
 
     private val USERNAME = "googlesamples"
 
-    private var usersRepo: IUsersRepo
+    @Inject
+    lateinit var usersRepo: UsersRepo
 
-    var repositoriesListPresenter: RepositoriesListPresenter
-
-
-    init {
-        usersRepo = RealmUsersRepositoriesImpl()
-        repositoriesListPresenter = RepositoriesListPresenter()
-    }
+    var repositoriesListPresenter: RepositoriesListPresenter = RepositoriesListPresenter()
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
