@@ -2,47 +2,49 @@ package com.android.android_libraries.mvp.model.cache
 
 import android.graphics.Bitmap
 import android.util.Log
-import com.android.android_libraries.App
-import com.android.android_libraries.mvp.model.cache.ICache.Companion.IMAGE_FOLDER_NAME
 import com.android.android_libraries.mvp.model.entity.Repository
 import com.android.android_libraries.mvp.model.entity.User
 import com.android.android_libraries.mvp.model.entity.realm.RealmRepository
 import com.android.android_libraries.mvp.model.entity.realm.RealmUser
+import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import io.realm.Realm
 import java.io.File
 import java.io.FileOutputStream
-import java.math.BigInteger
-import java.nio.charset.Charset
-import java.security.MessageDigest
 import java.util.function.Consumer
 
 
 class RealmCacheImpl : ICache {
 
-    override fun saveUser(login: String, user: User) {
-        val realm: Realm = Realm.getDefaultInstance()
-        val realmUser: RealmUser? =
-            realm.where(RealmUser::class.java).equalTo("login", login).findFirst()
+    override fun saveUser(login: String, user: User): Completable {
+        return Completable.fromAction {
+            val realm: Realm = Realm.getDefaultInstance()
+            val realmUser: RealmUser? =
+                realm.where(RealmUser::class.java).equalTo("login", login).findFirst()
 
-        if (realmUser == null) {
-            realm.executeTransaction { innerRealm ->
-                val newRealmUser: RealmUser = innerRealm.createObject(RealmUser::class.java, login)
-                newRealmUser.avatarUrl = user.avatar_url
-                newRealmUser.reposUrl = user.repos_url
+            if (realmUser == null) {
+                realm.executeTransaction { innerRealm ->
+                    val newRealmUser: RealmUser =
+                        innerRealm.createObject(RealmUser::class.java, login)
+                    newRealmUser.avatarUrl = user.avatar_url
+                    newRealmUser.reposUrl = user.repos_url
+                    newRealmUser.name = user.name
+                }
+            } else {
+                realm.executeTransaction { innerRealm ->
+                    val newRealmUser: RealmUser? =
+                        innerRealm.where(RealmUser::class.java)
+                            .equalTo("login", login).findFirst()
+                    newRealmUser?.avatarUrl = user.avatar_url
+                    newRealmUser?.reposUrl = user.repos_url
+                    newRealmUser?.name = user.name
+                }
             }
-        } else {
-            realm.executeTransaction { innerRealm ->
-                val newRealmUser: RealmUser? =
-                    innerRealm.where(RealmUser::class.java)
-                        .equalTo("login", login).findFirst()
-                newRealmUser?.avatarUrl = user.avatar_url
-                newRealmUser?.reposUrl = user.repos_url
-            }
+            realm.close()
         }
-        realm.close()
+
     }
 
     override fun getUser(login: String): Single<User> {
@@ -72,10 +74,10 @@ class RealmCacheImpl : ICache {
             realm.where(RealmUser::class.java).equalTo("login", user.login).findFirst()
 
         realm.executeTransaction { innerRealm ->
-            val newRealmUser: RealmUser =
-                innerRealm.createObject(RealmUser::class.java, user.login)
+            val newRealmUser = RealmUser()
             newRealmUser.avatarUrl = user.avatar_url
             newRealmUser.reposUrl = user.repos_url
+            innerRealm.insertOrUpdate(newRealmUser)
         }
 
         realm.executeTransaction { innerRealm ->

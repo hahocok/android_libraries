@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import com.android.android_libraries.App
 import com.android.android_libraries.mvp.model.entity.Repository
 import com.android.android_libraries.mvp.model.entity.User
+import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import java.io.File
@@ -17,7 +18,7 @@ interface ICache {
         const val IMAGE_FOLDER_NAME = "avatar"
     }
 
-    fun saveUser(login: String, user: User)
+    fun saveUser(login: String, user: User): Completable
     fun getUser(login: String): Single<User>
 
     fun saveUserRepository(user: User, repositories: MutableList<Repository>)

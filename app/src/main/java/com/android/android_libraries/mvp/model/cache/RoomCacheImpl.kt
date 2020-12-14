@@ -7,6 +7,7 @@ import com.android.android_libraries.mvp.model.entity.User
 import com.android.android_libraries.mvp.model.entity.room.RoomRepository
 import com.android.android_libraries.mvp.model.entity.room.RoomUser
 import com.android.android_libraries.mvp.model.entity.room.db.Database
+import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.SingleEmitter
@@ -16,16 +17,18 @@ import java.io.FileOutputStream
 
 
 class RoomCacheImpl : ICache {
-    override fun saveUser(login: String, user: User) {
-        val roomUser = Database.getInstance().getUserDao().findByLogin(login)
+    override fun saveUser(login: String, user: User): Completable {
+        return Completable.fromAction {
+            val roomUser = Database.getInstance().getUserDao().findByLogin(login)
 
-        roomUser?.run {
-            avatarUrl = user.avatar_url
-            reposUrl = user.repos_url
-            name = user.name
+            roomUser?.run {
+                avatarUrl = user.avatar_url
+                reposUrl = user.repos_url
+                name = user.name
+            }
+
+            roomUser?.let { Database.getInstance().getUserDao().insert(it) }
         }
-
-        roomUser?.let { Database.getInstance().getUserDao().insert(it) }
     }
 
     override fun getUser(login: String): Single<User> {

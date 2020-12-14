@@ -13,7 +13,7 @@ import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
-class AppModule(private var context: Context) {
+open class AppModule(private var context: Context) {
 
     @Singleton
     @Provides
@@ -40,7 +40,7 @@ class AppModule(private var context: Context) {
 
     @Singleton
     @Provides
-    fun getNetworkStatus(): INetworkStatus =
+    open fun getNetworkStatus(): INetworkStatus =
         NetworkStatus(context)
 
 }

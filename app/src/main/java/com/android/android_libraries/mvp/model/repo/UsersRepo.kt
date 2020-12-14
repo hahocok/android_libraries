@@ -8,13 +8,13 @@ import com.android.android_libraries.mvp.model.entity.User
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
-class UsersRepo(
+open class UsersRepo(
     private val networkStatus: INetworkStatus,
     private val api: IDataSource,
     private val cache: ICache
-) {
+) : IUsersRepo  {
 
-    fun getUser(username: String): Single<User> {
+    override fun getUser(username: String): Single<User> {
         return if (networkStatus.isOnline()) {
             api
                 .getUser(username)
@@ -32,7 +32,7 @@ class UsersRepo(
 
     }
 
-    fun getRepositories(user: User): Single<List<Repository>> {
+    override fun getRepositories(user: User): Single<List<Repository>> {
         return if (networkStatus.isOnline()) {
             api.getUserRepositories(user.repos_url)
                 .map { repos ->

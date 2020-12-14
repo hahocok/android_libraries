@@ -5,15 +5,16 @@ import android.util.Log
 import com.android.android_libraries.mvp.model.entity.Repository
 import com.android.android_libraries.mvp.model.entity.User
 import io.paperdb.Paper
+import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
+import io.reactivex.functions.Action
 import java.io.File
 import java.io.FileOutputStream
 
 class PaperCacheImpl : ICache {
-    override fun saveUser(login: String, user: User) {
-        Paper.book("users").write(login, user)
-    }
+    override fun saveUser(login: String, user: User): Completable =
+        Completable.fromAction { Paper.book("users").write(login, user) }
 
     override fun getUser(login: String): Single<User> {
         if (!Paper.book("users").contains(login)) {

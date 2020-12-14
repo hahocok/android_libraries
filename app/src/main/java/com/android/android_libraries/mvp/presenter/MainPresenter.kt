@@ -3,6 +3,7 @@ package com.android.android_libraries.mvp.presenter
 import android.annotation.SuppressLint
 import com.android.android_libraries.mvp.model.entity.Repository
 import com.android.android_libraries.mvp.model.entity.User
+import com.android.android_libraries.mvp.model.repo.IUsersRepo
 import com.android.android_libraries.mvp.model.repo.UsersRepo
 import com.android.android_libraries.mvp.presenter.list.IRepositoriesListPresenter
 import com.android.android_libraries.mvp.view.MainView
@@ -16,7 +17,7 @@ import java.util.*
 import javax.inject.Inject
 
 @InjectViewState
-class MainPresenter(var mainThread: Scheduler) : MvpPresenter<MainView>() {
+open class MainPresenter(var mainThread: Scheduler) : MvpPresenter<MainView>() {
     inner class RepositoriesListPresenter : IRepositoriesListPresenter {
 
         var repositories: MutableList<Repository> = ArrayList<Repository>()
@@ -34,7 +35,7 @@ class MainPresenter(var mainThread: Scheduler) : MvpPresenter<MainView>() {
     private val USERNAME = "googlesamples"
 
     @Inject
-    lateinit var usersRepo: UsersRepo
+    lateinit var usersRepo: IUsersRepo
 
     var repositoriesListPresenter: RepositoriesListPresenter = RepositoriesListPresenter()
 
@@ -45,8 +46,8 @@ class MainPresenter(var mainThread: Scheduler) : MvpPresenter<MainView>() {
     }
 
     @SuppressLint("CheckResult")
-    private fun loadUser() {
-        viewState.showLoading()
+    fun loadUser() {
+        viewState?.showLoading()
         usersRepo.getUser(USERNAME)
             .observeOn(mainThread)
             .doOnEvent { user, throwable ->

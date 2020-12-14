@@ -9,6 +9,7 @@ import com.android.android_libraries.mvp.model.entity.room.db.Database
 import io.paperdb.Paper
 import io.realm.Realm
 import io.realm.RealmConfiguration
+import timber.log.Timber
 
 class App : Application() {
 
@@ -20,6 +21,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+        Timber.plant(Timber.DebugTree())
         MultiDex.install(this)
         Paper.init(this)
 
